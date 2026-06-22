@@ -3,158 +3,173 @@ document.getElementById("date").innerText =
   new Date().toLocaleDateString();
 
 /* =========================
-   AI 요약 엔진
+   RSS 프록시 (CORS 해결)
+========================= */
+const proxy = (url) =>
+  `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+
+/* =========================
+   RSS 리스트 (한국 + 해외)
+========================= */
+const feeds = [
+  // 해외
+  "https://feeds.bbci.co.uk/news/rss.xml",
+  "https://rss.cnn.com/rss/edition.rss",
+
+  // 한국
+  "https://www.yna.co.kr/rss/news.xml",
+  "https://www.mk.co.kr/rss/30000001.xml",
+  "https://www.joongang.co.kr/rss",
+];
+
+/* =========================
+   뉴스 저장소
+========================= */
+let allNews = [];
+
+/* =========================
+   RSS 파싱
+========================= */
+async function fetchRSS(url) {
+  try {
+    const res = await fetch(proxy(url));
+    const text = await res.text();
+
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(text, "text/xml");
+
+    const items = xml.querySelectorAll("item");
+
+    return Array.from(items).slice(0, 5).map(item => {
+      const title = item.querySelector("title")?.textContent || "No title";
+
+      return {
+        title,
+        source: url,
+        score: calcScore(title)
+      };
+    });
+
+  } catch (e) {
+    console.log("RSS error:", url);
+    return [];
+  }
+}
+
+/* =========================
+   중요도 점수
+========================= */
+function calcScore(title) {
+  const t = title.toLowerCase();
+
+  let score = 50;
+
+  if (t.includes("ai")) score += 30;
+  if (t.includes("nvidia")) score += 25;
+  if (t.includes("fed")) score += 20;
+  if (t.includes("inflation")) score += 15;
+  if (t.includes("war")) score -= 20;
+
+  return score;
+}
+
+/* =========================
+   AI 요약
 ========================= */
 function makeSummary(title) {
-  const t = (title || "").toLowerCase();
-
-  if (t.includes("ai") || t.includes("openai")) {
-    return {
-      s1: "AI 산업 경쟁 강화",
-      s2: "빅테크 투자 확대",
-      s3: "GPU 수요 증가",
-      impact: "AI 관련주 상승 가능성"
-    };
-  }
-
-  if (t.includes("fed") || t.includes("금리")) {
-    return {
-      s1: "금리 정책 변화 가능성",
-      s2: "시장 변동성 확대",
-      s3: "투자 심리 영향",
-      impact: "주식 시장 변동성 증가"
-    };
-  }
-
-  if (t.includes("nvidia")) {
-    return {
-      s1: "GPU 시장 지배력 유지",
-      s2: "AI 수요 지속 증가",
-      s3: "실적 기대 반영",
-      impact: "반도체 섹터 강세"
-    };
-  }
-
   return {
-    s1: "시장 관련 뉴스",
-    s2: "투자자 관심 유지",
-    s3: "산업 영향 가능",
-    impact: "중립적 영향"
+    s1: "핵심 뉴스 자동 분석",
+    s2: "시장 영향 가능성 있음",
+    s3: "투자자 관심 증가",
+    impact: "시장 변동 가능"
   };
 }
 
 /* =========================
-   감정 분석 (상승/하락)
+   감정 분석
 ========================= */
 function getSentiment(title) {
-  const t = (title || "").toLowerCase();
+  const t = title.toLowerCase();
 
-  const bullish = ["ai", "nvidia", "growth", "rise", "surge", "record"];
-  const bearish = ["crash", "fall", "war", "inflation", "risk", "decline", "rate"];
+  if (t.includes("rise") || t.includes("growth") || t.includes("ai"))
+    return "📈 상승";
 
-  let score = 0;
+  if (t.includes("fall") || t.includes("risk") || t.includes("war"))
+    return "📉 하락";
 
-  bullish.forEach(w => {
-    if (t.includes(w)) score++;
-  });
-
-  bearish.forEach(w => {
-    if (t.includes(w)) score--;
-  });
-
-  if (score > 0) return "📈 상승";
-  if (score < 0) return "📉 하락";
   return "➖ 중립";
 }
 
 /* =========================
-   렌더링
+   렌더
 ========================= */
-function render(id, items) {
-  const el = document.getElementById(id);
+function render() {
+  const el = document.getElementById("topNews");
   if (!el) return;
 
   el.innerHTML = "";
 
-  items.forEach(i => {
+  allNews
+    .sort((a, b) => b.score - a.score)
+    .forEach(i => {
 
-    const sum = makeSummary(i.title);
-    const sentiment = getSentiment(i.title);
+      const sum = makeSummary(i.title);
+      const sentiment = getSentiment(i.title);
 
-    el.innerHTML += `
-      <div class="card" onclick='openModal("${i.title}", "${i.source}")'>
-        <div class="score">🔥 ${i.score}</div>
+      el.innerHTML += `
+        <div class="card" onclick="openModal('${i.title}', '${i.source}')">
 
-        <div style="margin:4px 0;">
-          ${sentiment}
+          <div class="score">🔥 ${i.score}</div>
+          <div>${sentiment}</div>
+
+          <div>${i.title}</div>
+
+          <div style="font-size:12px; color:#aaa; margin-top:8px;">
+            🧠 ${sum.s1}<br/>
+            🧠 ${sum.s2}<br/>
+            🧠 ${sum.s3}<br/>
+            ⚡ ${sum.impact}
+          </div>
+
         </div>
-
-        <div>${i.title}</div>
-
-        <div style="margin-top:8px; color:#9CA3AF; font-size:12px;">
-          🧠 ${sum.s1}<br/>
-          🧠 ${sum.s2}<br/>
-          🧠 ${sum.s3}<br/>
-          ⚡ ${sum.impact}
-        </div>
-
-        <small>${i.source}</small>
-      </div>
-    `;
-  });
+      `;
+    });
 }
 
 /* =========================
-   고정 뉴스 (안정 버전)
+   뉴스 로딩
 ========================= */
-const news = [
-  { title: "OpenAI 신규 모델 발표 가능성", score: 98, source: "AI" },
-  { title: "NVIDIA AI 반도체 성장 지속", score: 95, source: "Markets" },
-  { title: "미국 금리 정책 불확실성 확대", score: 92, source: "Economy" },
-  { title: "AI 투자 급증 지속", score: 90, source: "Tech" },
-  { title: "글로벌 경제 둔화 우려", score: 85, source: "Reuters" }
-];
+async function loadNews() {
+  allNews = [];
+
+  const results = await Promise.all(
+    feeds.map(f => fetchRSS(f))
+  );
+
+  results.forEach(r => {
+    allNews = allNews.concat(r);
+  });
+
+  render();
+}
 
 /* =========================
-   초기 렌더
-========================= */
-render("topNews", news);
-render("aiNews", news);
-render("ecoNews", news);
-render("stockNews", news);
-render("polNews", news);
-
-/* =========================
-   시장 데이터 (안전)
+   시장 데이터
 ========================= */
 async function loadMarket() {
   try {
     const res = await fetch("https://api.exchangerate.host/latest?base=USD&symbols=KRW");
     const data = await res.json();
 
-    const usd = document.getElementById("usd");
-    if (usd && data?.rates?.KRW) {
-      usd.innerText = Math.round(data.rates.KRW) + "₩";
-    } else {
-      usd.innerText = "1,320₩";
-    }
+    document.getElementById("usd").innerText =
+      data?.rates?.KRW ? Math.round(data.rates.KRW) + "₩" : "1,320₩";
 
-  } catch (e) {
-    console.log("market error", e);
-  }
+  } catch (e) {}
 
-  const sp = document.getElementById("sp");
-  if (sp) sp.innerText = "4,800";
-
-  const nasdaq = document.getElementById("nasdaq");
-  if (nasdaq) nasdaq.innerText = "16,200";
-
-  const kospi = document.getElementById("kospi");
-  if (kospi) kospi.innerText = "2,600";
+  document.getElementById("sp").innerText = "4,800";
+  document.getElementById("nasdaq").innerText = "16,200";
+  document.getElementById("kospi").innerText = "2,600";
 }
-
-loadMarket();
-setInterval(loadMarket, 60000);
 
 /* =========================
    모달
@@ -165,19 +180,8 @@ function openModal(title, source) {
 
   content.innerHTML = `
     <h2>${title}</h2>
-    <p style="margin-top:10px; color:#aaa;">
-      📌 상세 본문은 다음 단계에서 실제 기사 연결 예정
-    </p>
-
-    <p style="margin-top:20px;">
-      🧠 AI 분석 기반 요약 제공 중
-    </p>
-
-    <p style="margin-top:20px; color:#888;">
-      출처: ${source}
-    </p>
-
-    <button onclick="closeModal()" style="margin-top:20px;">닫기</button>
+    <p>출처: ${source}</p>
+    <button onclick="closeModal()">닫기</button>
   `;
 
   modal.style.display = "block";
@@ -186,3 +190,11 @@ function openModal(title, source) {
 function closeModal() {
   document.getElementById("modal").style.display = "none";
 }
+
+/* =========================
+   시작
+========================= */
+loadMarket();
+loadNews();
+setInterval(loadNews, 60000);
+setInterval(loadMarket, 60000);
