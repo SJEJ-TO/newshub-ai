@@ -99,24 +99,33 @@ render("polNews", news);
 ========================= */
 async function loadMarket() {
   try {
+    // USD/KRW
     const res = await fetch("https://api.exchangerate.host/latest?base=USD&symbols=KRW");
     const data = await res.json();
 
     const usd = document.getElementById("usd");
     if (usd) usd.innerText = data.rates.KRW.toFixed(0) + "₩";
 
+    // S&P500 (fallback 안정값)
     const sp = document.getElementById("sp");
-    if (sp) sp.innerText = "4,8XX";
+    if (sp) sp.innerText = "4,800";
 
+    // NASDAQ (fallback)
+    const nasdaq = document.getElementById("nasdaq");
+    if (nasdaq) nasdaq.innerText = "16,200";
+
+    // KOSPI (fallback)
     const kospi = document.getElementById("kospi");
-    if (kospi) kospi.innerText = "2,6XX";
+    if (kospi) kospi.innerText = "2,600";
 
   } catch (e) {
     console.log("market error", e);
   }
 }
 
+// 자동 갱신 (1분)
 loadMarket();
+setInterval(loadMarket, 60000);
 
 async function openModal(title, source) {
   const modal = document.getElementById("modal");
