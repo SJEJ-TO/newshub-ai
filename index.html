@@ -1,120 +1,47 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>News AI Terminal</title>
-
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial;
-      background: #0f0f0f;
-      color: white;
-    }
-
-    .market {
-      display: flex;
-      justify-content: space-around;
-      padding: 10px;
-      background: #111;
-      font-size: 14px;
-    }
-
-    .container {
-      padding: 10px;
-    }
-
-    .card {
-      background: #1a1a1a;
-      padding: 12px;
-      margin-bottom: 10px;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-
-    .score {
-      color: gold;
-      font-weight: bold;
-    }
-
-    .section {
-      margin-top: 20px;
-    }
-
-    #modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.8);
-    }
-
-    #modalContent {
-      background: #111;
-      margin: 50px auto;
-      padding: 20px;
-      width: 80%;
-      border-radius: 10px;
-    }
-
-    button {
-      padding: 8px 12px;
-      margin-top: 10px;
-    }
-  </style>
+  <title>NewsHub AI</title>
+  <link rel="stylesheet" href="style.css"/>
 </head>
-
 <body>
 
-  <!-- 시장 데이터 -->
-  <div class="market">
-    <div>USD/KRW<br><span id="usd">-</span></div>
-    <div>S&P500<br><span id="sp">-</span></div>
-    <div>NASDAQ<br><span id="nasdaq">-</span></div>
-    <div>KOSPI<br><span id="kospi">-</span></div>
-  </div>
+  <div class="app">
 
-  <!-- 뉴스 -->
-  <div class="container">
+    <header>
+      <h1>NewsHub AI</h1>
+      <p id="date"></p>
+    </header>
 
-    <div class="section">
-      <h3>TOP NEWS</h3>
-      <div id="topNews"></div>
-    </div>
+  <section class="market" style="display:flex; gap:10px; justify-content:space-around; padding:10px; background:#111; color:white;">
+  <div>USD/KRW<br><span id="usd">-</span></div>
+  <div>S&P500<br><span id="sp">-</span></div>
+  <div>NASDAQ<br><span id="nasdaq">-</span></div>
+  <div>KOSPI<br><span id="kospi">-</span></div>
+</section>
 
-    <div class="section">
-      <h3>AI</h3>
-      <div id="aiNews"></div>
-    </div>
+    <h2>🔥 오늘의 핵심 뉴스</h2>
+    <div id="topNews"></div>
 
-    <div class="section">
-      <h3>ECONOMY</h3>
-      <div id="ecoNews"></div>
-    </div>
+    <h2>🤖 AI</h2>
+    <div id="aiNews"></div>
 
-    <div class="section">
-      <h3>STOCK</h3>
-      <div id="stockNews"></div>
-    </div>
+    <h2>💰 경제</h2>
+    <div id="ecoNews"></div>
 
-    <div class="section">
-      <h3>POLITICS</h3>
-      <div id="polNews"></div>
-    </div>
+    <h2>📈 주식</h2>
+    <div id="stockNews"></div>
+
+    <h2>🏛 정치</h2>
+    <div id="polNews"></div>
 
   </div>
-
-  <!-- 모달 -->
-  <div id="modal">
-    <div id="modalContent">
-      <button onclick="closeModal()">닫기</button>
-    </div>
+<div id="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000000cc; color:white; padding:20px;">
+  <div id="modalContent" style="background:#111; padding:20px; border-radius:12px;">
   </div>
-
+</div>
   <script src="app.js"></script>
 </body>
 </html>
