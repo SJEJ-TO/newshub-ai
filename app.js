@@ -1,22 +1,27 @@
 document.getElementById("date").innerText =
   new Date().toLocaleDateString();
 
-function render(id, items) {
-  const el = document.getElementById(id);
-  if (!el) return;
+function render(id, items) 
+{items.forEach(i => {
 
-  el.innerHTML = "";
+  const sum = makeSummary(i.title);
 
-  items.forEach(i => {
-    el.innerHTML += `
-      <div class="card">
-        <div class="score">🔥 ${i.score}</div>
-        <div>${i.title}</div>
-        <small>${i.source}</small>
+  el.innerHTML += `
+    <div class="card">
+      <div class="score">🔥 ${i.score}</div>
+      <div>${i.title}</div>
+
+      <div style="margin-top:8px; color:#9CA3AF; font-size:12px;">
+        🧠 ${sum.s1}<br/>
+        🧠 ${sum.s2}<br/>
+        🧠 ${sum.s3}<br/>
+        ⚡ ${sum.impact}
       </div>
-    `;
-  });
-}
+
+      <small>${i.source}</small>
+    </div>
+  `;
+});}
 
 // 👉 완전 고정 데이터 (RSS 전부 제거)
 const news = [
