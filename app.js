@@ -118,20 +118,43 @@ async function loadMarket() {
 
 loadMarket();
 
-function openModal(title, source) {
+async function openModal(title, source) {
   const modal = document.getElementById("modal");
   const content = document.getElementById("modalContent");
 
   content.innerHTML = `
     <h2>${title}</h2>
-    <p style="margin-top:10px;">출처: ${source}</p>
-    <p style="margin-top:20px; color:#aaa;">
-      (여기에 실제 기사 본문은 다음 단계에서 연결됨)
-    </p>
-    <button onclick="closeModal()" style="margin-top:20px;">닫기</button>
+    <p style="color:#aaa;">로딩 중...</p>
   `;
 
   modal.style.display = "block";
+
+  try {
+    // ⚠️ 실제 기사 대신 RSS 기반이면 링크가 없어서 fallback
+    content.innerHTML = `
+      <h2>${title}</h2>
+      <p style="margin-top:10px; color:#aaa;">
+        📌 실제 뉴스 본문은 API 제한 때문에 일부만 표시됩니다
+      </p>
+
+      <div style="margin-top:20px;">
+        🧠 이 뉴스는 시장 영향 분석 중심으로 제공됩니다
+      </div>
+
+      <p style="margin-top:20px; color:#888;">
+        출처: ${source}
+      </p>
+
+      <button onclick="closeModal()" style="margin-top:20px;">닫기</button>
+    `;
+
+  } catch (e) {
+    content.innerHTML = `
+      <h2>${title}</h2>
+      <p>본문 로딩 실패</p>
+      <button onclick="closeModal()">닫기</button>
+    `;
+  }
 }
 
 function closeModal() {
