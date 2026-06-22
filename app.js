@@ -21,14 +21,7 @@ function render(id, items) {
 // 👉 안정용 하드 데이터 (무조건 동작)
 const feeds = [
   "https://feeds.bbci.co.uk/news/rss.xml",
-  "https://hnrss.org/frontpage",
-
-  // 🇰🇷 한국 뉴스
-  "https://www.yna.co.kr/rss/news.xml",
-  "https://www.mk.co.kr/rss/30000001/",
-  "https://www.mk.co.kr/rss/50100032/",
-  "https://www.joongang.co.kr/rss",
-  "https://www.chosun.com/arc/outboundfeeds/rss/"
+  "https://hnrss.org/frontpage"
 ];
 
 render("topNews", news);
