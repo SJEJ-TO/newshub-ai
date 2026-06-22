@@ -56,3 +56,41 @@ async function loadMarket() {
 }
 
 loadMarket();
+
+function makeSummary(title) {
+  const t = title.toLowerCase();
+
+  if (t.includes("ai") || t.includes("openai")) {
+    return {
+      s1: "AI 산업 경쟁이 강화되고 있음",
+      s2: "대형 빅테크 기업 중심 투자 증가",
+      s3: "GPU 및 데이터센터 수요 증가",
+      impact: "AI 관련주 상승 가능성"
+    };
+  }
+
+  if (t.includes("fed") || t.includes("금리")) {
+    return {
+      s1: "금리 정책 변화 가능성",
+      s2: "시장 변동성 확대",
+      s3: "투자 심리 영향",
+      impact: "주식 시장 변동성 증가"
+    };
+  }
+
+  if (t.includes("nvidia")) {
+    return {
+      s1: "GPU 시장 지배력 유지",
+      s2: "AI 수요 증가 수혜",
+      s3: "실적 기대감 반영",
+      impact: "반도체 섹터 강세"
+    };
+  }
+
+  return {
+    s1: "시장 관련 주요 뉴스",
+    s2: "투자자 관심 증가",
+    s3: "관련 산업 영향 가능",
+    impact: "시장 중립 영향"
+  };
+}
