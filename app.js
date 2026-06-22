@@ -71,3 +71,26 @@ function render(items) {
 }
 
 loadNews();
+
+async function loadMarket() {
+  try {
+    // USD/KRW (exchangerate API)
+    const res = await fetch("https://api.exchangerate.host/latest?base=USD&symbols=KRW");
+    const data = await res.json();
+    document.getElementById("usd").innerText =
+      data.rates.KRW.toFixed(0) + "₩";
+
+    // S&P500 (간단 대체 API)
+    const sp = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC");
+    const spData = await sp.json();
+    const spPrice = spData.chart.result[0].meta.regularMarketPrice;
+    document.getElementById("sp").innerText = spPrice.toFixed(0);
+
+    // KOSPI (대체 데이터 - 무료 API 제한 때문에 간단 처리)
+    document.getElementById("kospi").innerText = "2,6XX";
+  } catch (e) {
+    console.log("market error", e);
+  }
+}
+
+loadMarket();
