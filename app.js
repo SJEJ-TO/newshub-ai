@@ -19,12 +19,16 @@ function render(id, items) {
 }
 
 // 👉 안정용 하드 데이터 (무조건 동작)
-const news = [
-  { title: "OpenAI GPT 업데이트 가능성", score: 98, source: "AI" },
-  { title: "NVIDIA 실적 기대 상승", score: 95, source: "Markets" },
-  { title: "미국 금리 정책 불확실성", score: 92, source: "Economy" },
-  { title: "AI 투자 급증 지속", score: 90, source: "Tech" },
-  { title: "글로벌 경제 둔화 우려", score: 85, source: "Reuters" }
+const feeds = [
+  "https://feeds.bbci.co.uk/news/rss.xml",
+  "https://hnrss.org/frontpage",
+
+  // 🇰🇷 한국 뉴스
+  "https://www.yna.co.kr/rss/news.xml",
+  "https://www.mk.co.kr/rss/30000001/",
+  "https://www.mk.co.kr/rss/50100032/",
+  "https://www.joongang.co.kr/rss",
+  "https://www.chosun.com/arc/outboundfeeds/rss/"
 ];
 
 render("topNews", news);
@@ -32,3 +36,15 @@ render("aiNews", news);
 render("ecoNews", news);
 render("stockNews", news);
 render("polNews", news);
+
+const keywords = {
+  "AI": 25,
+  "OpenAI": 30,
+  "NVIDIA": 20,
+  "금리": 25,
+  "Fed": 25,
+  "환율": 20,
+  "삼성": 15,
+  "반도체": 20,
+  "트럼프": 10
+};
