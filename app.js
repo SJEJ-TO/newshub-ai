@@ -1,75 +1,49 @@
+
 document.getElementById("date").innerText =
   new Date().toLocaleDateString();
 
-function render(id, items) 
-{items.forEach(i => {
+/* =========================
+   안전 렌더 함수
+========================= */
+function render(id, items) {
+  const el = document.getElementById(id);
+  if (!el) return;
 
-  const sum = makeSummary(i.title);
+  el.innerHTML = "";
 
-  el.innerHTML += `
-    <div class="card">
-      <div class="score">🔥 ${i.score}</div>
-      <div>${i.title}</div>
+  items.forEach(i => {
 
-      <div style="margin-top:8px; color:#9CA3AF; font-size:12px;">
-        🧠 ${sum.s1}<br/>
-        🧠 ${sum.s2}<br/>
-        🧠 ${sum.s3}<br/>
-        ⚡ ${sum.impact}
+    const sum = makeSummary(i.title);
+
+    el.innerHTML += `
+      <div class="card">
+        <div class="score">🔥 ${i.score}</div>
+        <div>${i.title}</div>
+
+        <div style="margin-top:8px; color:#9CA3AF; font-size:12px;">
+          🧠 ${sum.s1}<br/>
+          🧠 ${sum.s2}<br/>
+          🧠 ${sum.s3}<br/>
+          ⚡ ${sum.impact}
+        </div>
+
+        <small>${i.source}</small>
       </div>
-
-      <small>${i.source}</small>
-    </div>
-  `;
-});}
-
-// 👉 완전 고정 데이터 (RSS 전부 제거)
-const news = [
-  { title: "OpenAI GPT 업데이트 기대", score: 98, source: "AI" },
-  { title: "NVIDIA AI 반도체 성장", score: 95, source: "Markets" },
-  { title: "미국 금리 정책 불확실", score: 92, source: "Economy" },
-  { title: "AI 투자 급증 지속", score: 90, source: "Tech" },
-  { title: "글로벌 경제 변화", score: 85, source: "Reuters" }
-];
-
-render("topNews", news);
-render("aiNews", news);
-render("ecoNews", news);
-render("stockNews", news);
-render("polNews", news);
-
-async function loadMarket() {
-  try {
-    // USD/KRW (간단 안정 API)
-    const res = await fetch("https://api.exchangerate.host/latest?base=USD&symbols=KRW");
-    const data = await res.json();
-
-    const usd = document.getElementById("usd");
-    if (usd) usd.innerText = data.rates.KRW.toFixed(0) + "₩";
-
-    // S&P500 (fallback 안전값)
-    const sp = document.getElementById("sp");
-    if (sp) sp.innerText = "4,8XX";
-
-    // KOSPI (fallback)
-    const kospi = document.getElementById("kospi");
-    if (kospi) kospi.innerText = "2,6XX";
-
-  } catch (e) {
-    console.log("market error", e);
-  }
+    `;
+  });
 }
 
-loadMarket();
-
+/* =========================
+   AI 요약 엔진 (규칙 기반)
+========================= */
 function makeSummary(title) {
-  const t = title.toLowerCase();
+  const t = (title || "").toLowerCase();
 
   if (t.includes("ai") || t.includes("openai")) {
     return {
-      s1: "AI 산업 경쟁이 강화되고 있음",
-      s2: "대형 빅테크 기업 중심 투자 증가",
-      s3: "GPU 및 데이터센터 수요 증가",
+      s1: "AI 산업 경쟁이 강화됨",
+      s2: "빅테크 투자 확대",
+      s3: "GPU 수요 증가",
       impact: "AI 관련주 상승 가능성"
     };
   }
@@ -86,16 +60,60 @@ function makeSummary(title) {
   if (t.includes("nvidia")) {
     return {
       s1: "GPU 시장 지배력 유지",
-      s2: "AI 수요 증가 수혜",
-      s3: "실적 기대감 반영",
+      s2: "AI 수요 지속 증가",
+      s3: "실적 기대 반영",
       impact: "반도체 섹터 강세"
     };
   }
 
   return {
-    s1: "시장 관련 주요 뉴스",
-    s2: "투자자 관심 증가",
+    s1: "시장 관련 뉴스",
+    s2: "투자자 관심 유지",
     s3: "관련 산업 영향 가능",
-    impact: "시장 중립 영향"
+    impact: "중립적 영향"
   };
 }
+
+/* =========================
+   고정 뉴스 데이터 (안정 버전)
+========================= */
+const news = [
+  { title: "OpenAI 신규 모델 발표 가능성", score: 98, source: "AI" },
+  { title: "NVIDIA AI 반도체 성장 지속", score: 95, source: "Markets" },
+  { title: "미국 금리 정책 불확실성 확대", score: 92, source: "Economy" },
+  { title: "AI 투자 급증 계속", score: 90, source: "Tech" },
+  { title: "글로벌 경제 둔화 우려", score: 85, source: "Reuters" }
+];
+
+/* =========================
+   초기 렌더
+========================= */
+render("topNews", news);
+render("aiNews", news);
+render("ecoNews", news);
+render("stockNews", news);
+render("polNews", news);
+
+/* =========================
+   시장 데이터 (안전)
+========================= */
+async function loadMarket() {
+  try {
+    const res = await fetch("https://api.exchangerate.host/latest?base=USD&symbols=KRW");
+    const data = await res.json();
+
+    const usd = document.getElementById("usd");
+    if (usd) usd.innerText = data.rates.KRW.toFixed(0) + "₩";
+
+    const sp = document.getElementById("sp");
+    if (sp) sp.innerText = "4,8XX";
+
+    const kospi = document.getElementById("kospi");
+    if (kospi) kospi.innerText = "2,6XX";
+
+  } catch (e) {
+    console.log("market error", e);
+  }
+}
+
+loadMarket();
