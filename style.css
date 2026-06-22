@@ -1,0 +1,47 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0B0F14;
+  color: #F9FAFB;
+}
+
+.app {
+  padding: 16px;
+  max-width: 800px;
+  margin: auto;
+}
+
+header h1 {
+  margin: 0;
+}
+
+header p {
+  color: #9CA3AF;
+}
+
+.market {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+  padding: 12px;
+  background: #111827;
+  border-radius: 12px;
+}
+
+h2 {
+  margin-top: 24px;
+  font-size: 16px;
+  color: #9CA3AF;
+}
+
+.card {
+  background: #111827;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 12px;
+}
+
+.score {
+  color: #3B82F6;
+  font-weight: bold;
+}
