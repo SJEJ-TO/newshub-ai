@@ -16,20 +16,20 @@ function render(id, items) {
     const sum = makeSummary(i.title);
 
     el.innerHTML += `
-      <div class="card">
-        <div class="score">🔥 ${i.score}</div>
-        <div>${i.title}</div>
+  <div class="card" onclick='openModal("${i.title}", "${i.source}")'>
+    <div class="score">🔥 ${i.score}</div>
+    <div>${i.title}</div>
 
-        <div style="margin-top:8px; color:#9CA3AF; font-size:12px;">
-          🧠 ${sum.s1}<br/>
-          🧠 ${sum.s2}<br/>
-          🧠 ${sum.s3}<br/>
-          ⚡ ${sum.impact}
-        </div>
+    <div style="margin-top:8px; color:#9CA3AF; font-size:12px;">
+      🧠 ${sum.s1}<br/>
+      🧠 ${sum.s2}<br/>
+      🧠 ${sum.s3}<br/>
+      ⚡ ${sum.impact}
+    </div>
 
-        <small>${i.source}</small>
-      </div>
-    `;
+    <small>${i.source}</small>
+  </div>
+`;
   });
 }
 
@@ -117,3 +117,23 @@ async function loadMarket() {
 }
 
 loadMarket();
+
+function openModal(title, source) {
+  const modal = document.getElementById("modal");
+  const content = document.getElementById("modalContent");
+
+  content.innerHTML = `
+    <h2>${title}</h2>
+    <p style="margin-top:10px;">출처: ${source}</p>
+    <p style="margin-top:20px; color:#aaa;">
+      (여기에 실제 기사 본문은 다음 단계에서 연결됨)
+    </p>
+    <button onclick="closeModal()" style="margin-top:20px;">닫기</button>
+  `;
+
+  modal.style.display = "block";
+}
+
+function closeModal() {
+  document.getElementById("modal").style.display = "none";
+}
