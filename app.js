@@ -18,10 +18,13 @@ function render(id, items) {
   });
 }
 
-// 👉 안정용 하드 데이터 (무조건 동작)
-const feeds = [
-  "https://feeds.bbci.co.uk/news/rss.xml",
-  "https://hnrss.org/frontpage"
+// 👉 완전 고정 데이터 (RSS 전부 제거)
+const news = [
+  { title: "OpenAI GPT 업데이트 기대", score: 98, source: "AI" },
+  { title: "NVIDIA AI 반도체 성장", score: 95, source: "Markets" },
+  { title: "미국 금리 정책 불확실", score: 92, source: "Economy" },
+  { title: "AI 투자 급증 지속", score: 90, source: "Tech" },
+  { title: "글로벌 경제 변화", score: 85, source: "Reuters" }
 ];
 
 render("topNews", news);
@@ -29,15 +32,3 @@ render("aiNews", news);
 render("ecoNews", news);
 render("stockNews", news);
 render("polNews", news);
-
-const keywords = {
-  "AI": 25,
-  "OpenAI": 30,
-  "NVIDIA": 20,
-  "금리": 25,
-  "Fed": 25,
-  "환율": 20,
-  "삼성": 15,
-  "반도체": 20,
-  "트럼프": 10
-};
