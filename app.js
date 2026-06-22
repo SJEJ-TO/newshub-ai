@@ -1,8 +1,62 @@
-document.getElementById("date").innerText =
-  new Date().toLocaleDateString();
+const feeds = [
+  "https://hnrss.org/frontpage",
+  "https://feeds.bbci.co.uk/news/rss.xml",
+  "https://www.reuters.com/rssFeed/worldNews",
+];
 
-function render(id, items) {
-  const container = document.getElementById(id);
+async function fetchRSS(url) {
+  const res = await fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(url));
+  const data = await res.json();
+
+  const parser = new DOMParser();
+  const xml = parser.parseFromString(data.contents, "text/xml");
+
+  const items = xml.querySelectorAll("item");
+
+  return [...items].slice(0, 5).map(item => ({
+    title: item.querySelector("title")?.textContent,
+    link: item.querySelector("link")?.textContent,
+    source: url
+  }));
+}
+
+function score(title) {
+  let s = 50;
+
+  const keywords = {
+    "AI": 20,
+    "OpenAI": 30,
+    "Trump": 15,
+    "Fed": 25,
+    "inflation": 20,
+    "NVIDIA": 25
+  };
+
+  for (let k in keywords) {
+    if (title.includes(k)) s += keywords[k];
+  }
+
+  return Math.min(100, s);
+}
+
+async function loadNews() {
+  let all = [];
+
+  for (let feed of feeds) {
+    const items = await fetchRSS(feed);
+    all = all.concat(items);
+  }
+
+  all = all.map(n => ({
+    ...n,
+    score: score(n.title)
+  })).sort((a, b) => b.score - a.score);
+
+  render(all.slice(0, 10));
+}
+
+function render(items) {
+  const container = document.getElementById("topNews");
   container.innerHTML = "";
 
   items.forEach(i => {
@@ -16,24 +70,4 @@ function render(id, items) {
   });
 }
 
-// 샘플 뉴스 데이터
-render("topNews", [
-  { title: "OpenAI 신규 모델 공개", score: 98, source: "Reuters" },
-  { title: "미국 금리 발표 임박", score: 95, source: "BBC" }
-]);
-
-render("aiNews", [
-  { title: "xAI Grok 업데이트", score: 88, source: "TechCrunch" }
-]);
-
-render("ecoNews", [
-  { title: "미국 CPI 상승", score: 90, source: "Reuters" }
-]);
-
-render("stockNews", [
-  { title: "NVIDIA 신고가", score: 92, source: "CNBC" }
-]);
-
-render("polNews", [
-  { title: "미중 긴장 지속", score: 85, source: "AP" }
-]);
+loadNews();
