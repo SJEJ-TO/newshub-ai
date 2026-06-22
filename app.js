@@ -94,3 +94,5 @@ async function loadMarket() {
 }
 
 loadMarket();
+
+setInterval(loadMarket, 60000); // 1분마다 갱신
