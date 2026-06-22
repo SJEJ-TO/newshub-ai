@@ -14,7 +14,26 @@ function render(id, items) {
   items.forEach(i => {
 
     const sum = makeSummary(i.title);
+function getSentiment(title) {
+  const t = title.toLowerCase();
 
+  const bullish = ["ai", "nvidia", "growth", "record", "rise", "surge"];
+  const bearish = ["crash", "fall", "war", "inflation", "risk", "decline", "rate"];
+
+  let score = 0;
+
+  bullish.forEach(w => {
+    if (t.includes(w)) score += 1;
+  });
+
+  bearish.forEach(w => {
+    if (t.includes(w)) score -= 1;
+  });
+
+  if (score > 0) return "📈 상승";
+  if (score < 0) return "📉 하락";
+  return "➖ 중립";
+}
     el.innerHTML += `
   <div class="card" onclick='openModal("${i.title}", "${i.source}")'>
     <div class="score">🔥 ${i.score}</div>
@@ -31,6 +50,7 @@ function render(id, items) {
   </div>
 `;
   });
+  const sentiment = getSentiment(i.title);
 }
 
 /* =========================
